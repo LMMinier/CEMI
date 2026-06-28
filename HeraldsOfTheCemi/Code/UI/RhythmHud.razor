@@ -4,27 +4,20 @@
 @using System.Linq;
 @inherits PanelComponent
 
-<root class="state-@(Director?.State.ToString().ToLower() ?? "loading")">
+<root>
 	<div class="sky">
 		<div class="moon"></div>
 		<div class="hunter hunter-a" style="opacity:@HunterOpacity;"></div>
 		<div class="hunter hunter-b" style="opacity:@HunterOpacity;"></div>
 	</div>
-
 	<div class="river">
-		<div class="current current-a"></div>
-		<div class="current current-b"></div>
-		<div class="roots roots-left"></div>
-		<div class="roots roots-right"></div>
+		<div class="current current-a"></div><div class="current current-b"></div>
+		<div class="roots roots-left"></div><div class="roots roots-right"></div>
 		<div class="corridor" style="opacity:@CorridorOpacity;"></div>
-		<div class="canoe" style="left:@CanoeLeft%; transform: rotate(@CanoeTilt.ToString("0.0")deg);">
-			<div class="canoe-body"></div>
-			<div class="amaia"></div>
-			<div class="child"></div>
-			<div class="wake"></div>
+		<div class="canoe" style="left:@CanoeLeft%;">
+			<div class="canoe-body"></div><div class="amaia"></div><div class="child"></div><div class="wake"></div>
 		</div>
 	</div>
-
 	<div class="vignette"></div>
 
 	@if ( Director?.State == PrologueState.Playing )
@@ -34,12 +27,10 @@
 			<div class="title">Before the Corridors</div>
 			<div class="sub">The river carries instructions. Answer before Aperture finds the wake.</div>
 		</div>
-
 		<div class="heat">
 			<div class="heat-line"><label>APERTURE TRACE</label><span>@HeatPct%</span></div>
 			<div class="bar"><div class="fill" style="width:@HeatPct%;"></div></div>
 		</div>
-
 		<div class="pattern-card">
 			<div class="pattern-title">THE RIVER PHRASE</div>
 			<div class="pattern-row">
@@ -52,29 +43,23 @@
 			</div>
 			<div class="pattern-call">@CurrentCall</div>
 		</div>
-
 		<div class="beat">
-			<div class="ring outer @OnBeatClass" style="transform: scale(@RingScale.ToString("0.00"));"></div>
-			<div class="ring inner"></div>
-			<div class="core @OnBeatClass"></div>
+			<div class="ring outer @OnBeatClass" style="transform:scale(@RingScale.ToString("0.00"));"></div>
+			<div class="ring inner"></div><div class="core @OnBeatClass"></div>
 		</div>
-
 		<div class="judge @JudgeClass">@JudgeText</div>
-
 		<div class="stats">
 			<div><small>PASSAGE</small><strong>@ProgressPct%</strong></div>
 			<div><small>COMBO</small><strong>@(Player?.Combo ?? 0)×</strong></div>
 			<div><small>SCORE</small><strong>@(Player?.Score ?? 0)</strong></div>
 		</div>
-
 		<div class="progress-track"><div class="progress-fill" style="width:@ProgressPct%;"></div></div>
 		<div class="hint"><b>SPACE</b> or <b>MOUSE 1</b> — answer when the rings meet</div>
 	}
 	else if ( Director?.State == PrologueState.Escaped )
 	{
 		<div class="end win">
-			<div class="seal">ᚠ</div>
-			<div class="kicker">THE RIVER REMEMBERED</div>
+			<div class="seal">ᚠ</div><div class="kicker">THE RIVER REMEMBERED</div>
 			<h1>Into the Corridor</h1>
 			<p>Amaia carried her son beneath the roots. The hunters lost the shape of them.</p>
 			<div class="result-grid">
@@ -90,8 +75,7 @@
 	else if ( Director?.State == PrologueState.Caught )
 	{
 		<div class="end lose">
-			<div class="aperture-mark"></div>
-			<div class="kicker">THE PATTERN BROKE</div>
+			<div class="aperture-mark"></div><div class="kicker">THE PATTERN BROKE</div>
 			<h1>The Aperture Opens</h1>
 			<p>Cold light found the water. The hunters learned the shape of the wake.</p>
 			<div class="result-grid compact">
@@ -109,35 +93,22 @@
 	RhythmPlayer Player => Scene.GetAllComponents<RhythmPlayer>().FirstOrDefault();
 	HeatSystem Heat => Scene.GetAllComponents<HeatSystem>().FirstOrDefault();
 	PrologueDirector Director => Scene.GetAllComponents<PrologueDirector>().FirstOrDefault();
-
 	int HeatPct => (int)((Heat?.Heat ?? 0f) * 100f);
 	int ProgressPct => (int)((Player?.Progress ?? 0f) * 100f);
 	int AccuracyPct => (int)((Player?.Accuracy ?? 0f) * 100f);
 	int PatternStep => Player?.PatternStep ?? 0;
 	string CurrentCall => Player?.CurrentPatternName ?? "LISTEN";
 	float CanoeLeft => 10f + (Player?.Progress ?? 0f) * 72f;
-	float CanoeTilt => JudgeFresh && Player?.LastJudgement == RhythmJudgement.Miss ? -5f : 0f;
 	float HunterOpacity => 0.12f + (Heat?.Heat ?? 0f) * 0.78f;
 	float CorridorOpacity => 0.15f + (Player?.Progress ?? 0f) * 0.85f;
 	float RingScale => Conductor is null ? 1f : 1f + (1f - Conductor.BeatPhase) * 1.45f;
-	string OnBeatClass => (Conductor is not null && (Conductor.BeatPhase < 0.10f || Conductor.BeatPhase > 0.90f)) ? "pulse" : "";
-	bool JudgeFresh => Player is not null && (Time.Now - Player.LastJudgementTime) < 0.48f;
-	string JudgeText => !JudgeFresh ? "" : Player.LastJudgement switch
+	string OnBeatClass => Conductor is not null && (Conductor.BeatPhase < 0.10f || Conductor.BeatPhase > 0.90f) ? "pulse" : "";
+	bool JudgeFresh => Player is not null && Time.Now - Player.LastJudgementTime < 0.48f;
+	string JudgeText => !JudgeFresh ? "" : Player.LastJudgement switch { RhythmJudgement.Perfect => "PERFECT", RhythmJudgement.Good => "GOOD", _ => "THE WATER HEARD YOU" };
+	string JudgeClass => !JudgeFresh ? "hidden" : Player.LastJudgement switch { RhythmJudgement.Perfect => "perfect show", RhythmJudgement.Good => "good show", _ => "miss show" };
+	protected override int BuildHash()
 	{
-		RhythmJudgement.Perfect => "PERFECT",
-		RhythmJudgement.Good => "GOOD",
-		RhythmJudgement.Miss => "THE WATER HEARD YOU",
-		_ => ""
-	};
-	string JudgeClass => !JudgeFresh ? "hidden" : Player.LastJudgement switch
-	{
-		RhythmJudgement.Perfect => "perfect show",
-		RhythmJudgement.Good => "good show",
-		_ => "miss show"
-	};
-
-	protected override int BuildHash() => HashCode.Combine(
-		Director?.State, HeatPct, ProgressPct, Player?.Combo, Player?.Score,
-		Player?.BestCombo, AccuracyPct, PatternStep, (int)(RingScale * 24f),
-		OnBeatClass, JudgeText, JudgeClass );
+		int a = HashCode.Combine( Director?.State, HeatPct, ProgressPct, Player?.Combo, Player?.Score, Player?.BestCombo, AccuracyPct, PatternStep );
+		return HashCode.Combine( a, (int)(RingScale * 24f), OnBeatClass, JudgeText, JudgeClass );
+	}
 }

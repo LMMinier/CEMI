@@ -1,0 +1,96 @@
+@using Sandbox;
+@using Sandbox.UI;
+@using System;
+@using System.Linq;
+@inherits PanelComponent
+
+<root>
+	<div class="vignette"></div>
+
+	@if ( Director?.State == PrologueState.Playing )
+	{
+		<div class="top">
+			<div class="title">Before the Corridors</div>
+			<div class="sub">Answer the river on the beat. Stay under the roots.</div>
+		</div>
+
+		<div class="heat">
+			<label>APERTURE</label>
+			<div class="bar"><div class="fill" style="width:@(HeatPct)%;"></div></div>
+		</div>
+
+		<div class="beat">
+			<div class="ring @OnBeatClass" style="transform: scale(@RingScale.ToString("0.00"));"></div>
+			<div class="core @OnBeatClass"></div>
+		</div>
+
+		<div class="judge @JudgeClass">@JudgeText</div>
+
+		<div class="progress">
+			<span>Node @(Player?.NodeIndex ?? 0) / @NodeTotal</span>
+			<span class="combo">@(Player?.Combo ?? 0)×</span>
+		</div>
+
+		<div class="hint">[Space] / [Mouse1] — answer the river</div>
+	}
+	else if ( Director?.State == PrologueState.Escaped )
+	{
+		<div class="end win">
+			<h1>Into the Corridor</h1>
+			<p>The river remembered the path. You carried them through.</p>
+			<p class="score">Score @(Player?.Score ?? 0)</p>
+			<p class="again">[R] run it again</p>
+		</div>
+	}
+	else if ( Director?.State == PrologueState.Caught )
+	{
+		<div class="end lose">
+			<h1>The Aperture Opens</h1>
+			<p>Cold light found the water. They were counting you.</p>
+			<p class="again">[R] run it again</p>
+		</div>
+	}
+</root>
+
+@code {
+	ResonanceConductor Conductor => Scene.GetAllComponents<ResonanceConductor>().FirstOrDefault();
+	RhythmPlayer Player => Scene.GetAllComponents<RhythmPlayer>().FirstOrDefault();
+	HeatSystem Heat => Scene.GetAllComponents<HeatSystem>().FirstOrDefault();
+	PrologueDirector Director => Scene.GetAllComponents<PrologueDirector>().FirstOrDefault();
+
+	int HeatPct => (int)((Heat?.Heat ?? 0f) * 100f);
+	int NodeTotal => Player?.NodeTotal ?? 1;
+
+	// The ring contracts toward the core as the next beat approaches; smallest on-beat.
+	float RingScale => Conductor is null ? 1f : 1f + (1f - Conductor.BeatPhase) * 1.3f;
+	string OnBeatClass => (Conductor is not null && Conductor.BeatPhase < 0.12f) ? "pulse" : "";
+
+	bool JudgeFresh => Player is not null && (Time.Now - Player.LastJudgementTime) < 0.45f;
+
+	string JudgeText => !JudgeFresh ? "" : Player.LastJudgement switch
+	{
+		RhythmJudgement.Perfect => "PERFECT",
+		RhythmJudgement.Good => "good",
+		RhythmJudgement.Miss => "splash!",
+		_ => ""
+	};
+
+	string JudgeClass
+	{
+		get
+		{
+			if ( !JudgeFresh ) return "hidden";
+			return Player.LastJudgement switch
+			{
+				RhythmJudgement.Perfect => "perfect show",
+				RhythmJudgement.Good => "good show",
+				_ => "miss show"
+			};
+		}
+	}
+
+	// Rhythm UI animates continuously, so include the live values in the hash.
+	protected override int BuildHash() => HashCode.Combine(
+		Director?.State, HeatPct, Player?.NodeIndex, Player?.Combo, Player?.Score,
+		(int)(RingScale * 24f), OnBeatClass, JudgeText, JudgeClass );
+}

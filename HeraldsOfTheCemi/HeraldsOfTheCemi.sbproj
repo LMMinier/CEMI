@@ -1,0 +1,35 @@
+{
+  "Title": "Heralds of the Cemí",
+  "Type": "game",
+  "Org": "lmminier",
+  "Ident": "heralds_cemi",
+  "Tags": "rhythm singleplayer narrative",
+  "Schema": 1,
+  "HasAssets": true,
+  "AssetsPath": "Assets",
+  "ResourcePaths": [
+    "/scenes/*",
+    "/Assets/*"
+  ],
+  "IsWhitelistDisabled": false,
+  "PackageReferences": [],
+  "EditorReferences": null,
+  "Metadata": {
+    "MaxPlayers": 1,
+    "MinPlayers": 1,
+    "GameNetworkType": "Singleplayer",
+    "MapList": [],
+    "MapSelect": "Unrestricted",
+    "RankType": "None",
+    "PerMapRanking": false,
+    "LeaderboardType": "None",
+    "GameCategory": "Adventure",
+    "Compiler": {
+      "RootNamespace": "Heralds",
+      "DefineConstants": "SANDBOX;ADDON;DEBUG",
+      "NoWarn": "1701;1702;1591;",
+      "Nullables": true,
+      "References": []
+    }
+  }
+}

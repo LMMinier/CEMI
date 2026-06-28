@@ -1,0 +1,74 @@
+@using Sandbox
+@using HeraldsOfTheCemi
+@inherits PanelComponent
+
+<root class="@((Player?.HeraldMode ?? false) ? "herald-mode" : "")">
+	@if ( Player is not null )
+	{
+		<div class="topbar">
+			<div class="identity">
+				<div class="eyebrow">HERALD OF THE BRONX</div>
+				<div class="hero-name">@Player.HeroName</div>
+				<div class="crew">@(string.IsNullOrEmpty( Player.CrewName ) ? "NO CREW" : Player.CrewName)</div>
+			</div>
+
+			<div class="district">@Player.CurrentDistrict</div>
+
+			<div class="cred">
+				<span>STREET CRED</span>
+				<strong>@Player.StreetCred</strong>
+			</div>
+		</div>
+
+		<div class="status-panel">
+			<div class="meter health">
+				<div class="label"><span>HEALTH</span><span>@Player.Health</span></div>
+				<div class="track"><div class="fill" style="width: @(Player.Health)%"></div></div>
+			</div>
+
+			<div class="meter resonance">
+				<div class="label"><span>RESONANCE</span><span>@((int)Player.Resonance)</span></div>
+				<div class="track"><div class="fill" style="width: @(Player.Resonance)%"></div></div>
+			</div>
+		</div>
+
+		@if ( !string.IsNullOrEmpty( Player.ActiveMissionId ) )
+		{
+			<div class="mission @(Player.MissionComplete ? "complete" : "")">
+				<div class="eyebrow">ACTIVE MISSION</div>
+				<div class="mission-title">@Player.MissionTitle</div>
+				<div class="mission-progress">
+					@(Player.MissionComplete ? "RETURN TO THE MISSION CONTACT" : $"{Player.MissionProgress} / {Player.MissionTarget}")
+				</div>
+			</div>
+		}
+
+		<div class="activity-stats">
+			<span>TAGS @Player.GraffitiTags</span>
+			<span>COURT WINS @Player.StreetballWins</span>
+			<span>@(Player.HeraldMode ? "HERALD MODE ACTIVE" : "PRESS POWER FOR HERALD MODE")</span>
+		</div>
+	}
+</root>
+
+@code
+{
+	[Property] public CemiPlayerState Player { get; set; }
+
+	protected override int BuildHash()
+	{
+		if ( Player is null )
+			return 0;
+
+		return HashCode.Combine(
+			Player.Health,
+			Player.Resonance,
+			Player.StreetCred,
+			Player.CrewName,
+			Player.CurrentDistrict,
+			Player.ActiveMissionId,
+			Player.MissionProgress,
+			Player.HeraldMode
+		);
+	}
+}

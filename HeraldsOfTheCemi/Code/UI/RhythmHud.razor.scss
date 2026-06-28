@@ -1,11 +1,10 @@
-// Palette drawn from the prologue: night river, bioluminescent teal,
-// cemí amber, and Aperture's cold cut-moonlight white-blue.
-$river:    #06121a;
-$teal:     #4fe3c1;
-$teal-dim: rgba(79, 227, 193, 0.35);
-$amber:    #ffb45a;
-$cold:     #bcd9ff;
-$danger:   #ff5470;
+$river: #06131b;
+$deep: #02070b;
+$teal: #53e7c4;
+$teal-dim: rgba(83, 231, 196, 0.34);
+$amber: #ffb45a;
+$cold: #c7e0ff;
+$danger: #ff526d;
 
 RhythmHud {
 	position: absolute;
@@ -15,168 +14,245 @@ RhythmHud {
 	color: $cold;
 	pointer-events: none;
 	user-select: none;
+	overflow: hidden;
+	background-color: $deep;
+
+	.sky {
+		position: absolute;
+		inset: 0 0 44% 0;
+		background: linear-gradient(to bottom, #02070b, #071c25 70%, #0b2730);
+	}
+
+	.moon {
+		position: absolute;
+		right: 12%;
+		top: 9%;
+		width: 88px;
+		height: 88px;
+		border-radius: 50%;
+		background: rgba(199,224,255,0.86);
+		box-shadow: 0 0 80px rgba(199,224,255,0.35);
+	}
+
+	.hunter {
+		position: absolute;
+		width: 18px;
+		height: 80px;
+		background: linear-gradient(to bottom, rgba(255,255,255,0), $cold, rgba(255,255,255,0));
+		filter: blur(3px);
+		transition: opacity 0.25s ease;
+	}
+	.hunter-a { right: 19%; top: 20%; transform: rotate(15deg); }
+	.hunter-b { right: 8%; top: 34%; transform: rotate(-9deg); }
+
+	.river {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 60%;
+		background: linear-gradient(to bottom, #0d3440, $river 35%, #020a0f);
+		border-top: 2px solid rgba(83,231,196,0.12);
+	}
+
+	.current {
+		position: absolute;
+		left: -10%;
+		width: 120%;
+		height: 3px;
+		background: rgba(83,231,196,0.18);
+		box-shadow: 0 0 14px rgba(83,231,196,0.2);
+	}
+	.current-a { top: 28%; transform: rotate(-2deg); }
+	.current-b { top: 62%; transform: rotate(2deg); opacity: 0.55; }
+
+	.roots {
+		position: absolute;
+		top: -34%;
+		width: 34%;
+		height: 110%;
+		border: 18px solid #09100d;
+		border-radius: 48%;
+		box-shadow: inset 0 0 25px #000, 0 0 30px rgba(0,0,0,0.8);
+	}
+	.roots-left { left: -20%; transform: rotate(20deg); }
+	.roots-right { right: -21%; transform: rotate(-18deg); }
+
+	.corridor {
+		position: absolute;
+		right: 5%;
+		top: 17%;
+		width: 150px;
+		height: 150px;
+		border-radius: 50%;
+		border: 4px solid $teal;
+		background: radial-gradient(circle, rgba(83,231,196,0.28), rgba(83,231,196,0.04) 48%, transparent 70%);
+		box-shadow: 0 0 80px $teal-dim, inset 0 0 45px $teal-dim;
+		transition: opacity 0.2s ease;
+	}
+
+	.canoe {
+		position: absolute;
+		top: 48%;
+		width: 150px;
+		height: 68px;
+		transition: left 0.45s ease-out, transform 0.12s ease;
+	}
+	.canoe-body {
+		position: absolute;
+		left: 0;
+		top: 31px;
+		width: 150px;
+		height: 30px;
+		border-radius: 10px 10px 52px 52px;
+		background: linear-gradient(to bottom, #9a6337, #4c2b19);
+		border-bottom: 3px solid #28140d;
+	}
+	.amaia {
+		position: absolute;
+		left: 67px;
+		top: 8px;
+		width: 23px;
+		height: 38px;
+		border-radius: 45% 45% 30% 30%;
+		background: #5f351f;
+		box-shadow: 0 -13px 0 -3px #251813;
+	}
+	.child {
+		position: absolute;
+		left: 91px;
+		top: 23px;
+		width: 15px;
+		height: 21px;
+		border-radius: 50%;
+		background: $amber;
+		box-shadow: 0 0 13px rgba(255,180,90,0.3);
+	}
+	.wake {
+		position: absolute;
+		left: -70px;
+		top: 47px;
+		width: 85px;
+		height: 5px;
+		background: linear-gradient(to left, rgba(83,231,196,0.55), transparent);
+	}
 
 	.vignette {
 		position: absolute;
-		width: 100%;
-		height: 100%;
-		background: radial-gradient( ellipse at center, rgba(0,0,0,0) 45%, rgba(0,0,0,0.85) 100% );
+		inset: 0;
+		background: radial-gradient(ellipse at center, transparent 38%, rgba(0,0,0,0.82) 100%);
 	}
 
-	.top {
+	.chapter {
 		position: absolute;
-		top: 48px;
-		width: 100%;
+		top: 34px;
+		left: 42px;
 		flex-direction: column;
-		align-items: center;
-		text-align: center;
-
-		.title {
-			font-size: 34px;
-			font-weight: 600;
-			letter-spacing: 6px;
-			color: $teal;
-			text-shadow: 0 0 24px $teal-dim;
-		}
-		.sub {
-			margin-top: 6px;
-			font-size: 15px;
-			color: rgba(188, 217, 255, 0.7);
-			letter-spacing: 2px;
-		}
+		max-width: 620px;
+		.eyebrow { font-size: 11px; letter-spacing: 6px; color: $amber; }
+		.title { margin-top: 7px; font-size: 33px; font-weight: 700; letter-spacing: 3px; color: $teal; text-shadow: 0 0 26px $teal-dim; }
+		.sub { margin-top: 7px; font-size: 14px; color: rgba(199,224,255,0.67); letter-spacing: 1px; }
 	}
 
-	// Aperture pursuit bar
 	.heat {
 		position: absolute;
-		top: 130px;
-		left: 50%;
-		margin-left: -200px;
-		width: 400px;
+		top: 43px;
+		right: 44px;
+		width: 320px;
 		flex-direction: column;
-		align-items: center;
-
-		label {
-			font-size: 12px;
-			letter-spacing: 8px;
-			color: $danger;
-			margin-bottom: 6px;
-		}
-		.bar {
-			width: 400px;
-			height: 8px;
-			background: rgba(255,255,255,0.08);
-			border-radius: 4px;
-			overflow: hidden;
-		}
-		.fill {
-			height: 100%;
-			background: linear-gradient( to right, $cold, $danger );
-			transition: width 0.15s ease-out;
-		}
+		.heat-line { width: 100%; justify-content: space-between; font-size: 11px; letter-spacing: 3px; color: $danger; }
+		.bar { margin-top: 8px; width: 100%; height: 7px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+		.fill { height: 100%; background: linear-gradient(to right, $cold, $danger); transition: width 0.16s ease-out; }
 	}
 
-	// Central beat ring
+	.pattern-card {
+		position: absolute;
+		left: 50%;
+		top: 16%;
+		margin-left: -280px;
+		width: 560px;
+		padding: 13px 18px;
+		flex-direction: column;
+		align-items: center;
+		background: rgba(2,9,13,0.66);
+		border: 1px solid rgba(83,231,196,0.18);
+		border-radius: 8px;
+		.pattern-title { font-size: 10px; letter-spacing: 5px; color: rgba(199,224,255,0.55); }
+		.pattern-row { margin-top: 10px; gap: 13px; }
+		.pattern-step { align-items: center; gap: 5px; font-size: 10px; letter-spacing: 1px; color: rgba(199,224,255,0.28); }
+		.pattern-step .dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgba(199,224,255,0.35); }
+		.pattern-step.done { color: rgba(83,231,196,0.55); }
+		.pattern-step.done .dot { background: rgba(83,231,196,0.6); }
+		.pattern-step.active { color: $amber; transform: scale(1.12); }
+		.pattern-step.active .dot { background: $amber; border-color: $amber; box-shadow: 0 0 12px $amber; }
+		.pattern-call { margin-top: 9px; font-size: 17px; font-weight: 700; letter-spacing: 6px; color: $amber; }
+	}
+
 	.beat {
 		position: absolute;
 		left: 50%;
-		top: 50%;
-		margin-left: -120px;
-		margin-top: -120px;
-		width: 240px;
-		height: 240px;
+		top: 52%;
+		margin-left: -125px;
+		margin-top: -125px;
+		width: 250px;
+		height: 250px;
 		align-items: center;
 		justify-content: center;
-
-		.ring {
-			position: absolute;
-			width: 90px;
-			height: 90px;
-			border: 3px solid $teal;
-			border-radius: 50%;
-			box-shadow: 0 0 30px $teal-dim;
-			opacity: 0.85;
-
-			&.pulse {
-				border-color: $amber;
-				box-shadow: 0 0 50px rgba(255, 180, 90, 0.6);
-			}
-		}
-		.core {
-			width: 30px;
-			height: 30px;
-			background: $teal;
-			border-radius: 50%;
-			box-shadow: 0 0 24px $teal;
-
-			&.pulse {
-				background: $amber;
-				box-shadow: 0 0 40px $amber;
-			}
-		}
+		.ring { position: absolute; border-radius: 50%; }
+		.outer { width: 92px; height: 92px; border: 3px solid $teal; box-shadow: 0 0 35px $teal-dim; opacity: 0.9; }
+		.inner { width: 92px; height: 92px; border: 1px solid rgba(199,224,255,0.35); }
+		.core { width: 26px; height: 26px; border-radius: 50%; background: $teal; box-shadow: 0 0 26px $teal; }
+		.pulse { border-color: $amber; background-color: $amber; box-shadow: 0 0 48px rgba(255,180,90,0.8); }
 	}
 
 	.judge {
 		position: absolute;
 		left: 0;
-		top: 62%;
+		top: 66%;
 		width: 100%;
 		text-align: center;
-		font-size: 40px;
-		font-weight: 700;
-		letter-spacing: 4px;
-		transition: opacity 0.2s ease-out;
-
+		font-size: 36px;
+		font-weight: 800;
+		letter-spacing: 5px;
+		transition: opacity 0.18s ease-out;
 		&.hidden { opacity: 0; }
-		&.show   { opacity: 1; }
-		&.perfect { color: $amber; text-shadow: 0 0 30px rgba(255,180,90,0.7); }
-		&.good    { color: $teal; }
-		&.miss    { color: $danger; font-size: 28px; }
+		&.show { opacity: 1; }
+		&.perfect { color: $amber; text-shadow: 0 0 34px rgba(255,180,90,0.75); }
+		&.good { color: $teal; }
+		&.miss { color: $danger; font-size: 22px; }
 	}
 
-	.progress {
+	.stats {
 		position: absolute;
-		bottom: 80px;
-		width: 100%;
-		justify-content: center;
-		gap: 24px;
-		font-size: 22px;
-		letter-spacing: 2px;
-
-		.combo { color: $amber; font-weight: 600; }
+		left: 42px;
+		bottom: 54px;
+		gap: 30px;
+		> div { flex-direction: column; }
+		small { font-size: 9px; letter-spacing: 3px; color: rgba(199,224,255,0.45); }
+		strong { margin-top: 3px; font-size: 21px; color: $cold; }
 	}
-
-	.hint {
-		position: absolute;
-		bottom: 36px;
-		width: 100%;
-		text-align: center;
-		font-size: 13px;
-		letter-spacing: 3px;
-		color: rgba(188,217,255,0.45);
-	}
+	.progress-track { position: absolute; left: 42px; right: 42px; bottom: 35px; height: 4px; background: rgba(255,255,255,0.07); }
+	.progress-fill { height: 100%; background: linear-gradient(to right, $teal, $amber); box-shadow: 0 0 12px $teal-dim; transition: width 0.45s ease-out; }
+	.hint { position: absolute; right: 42px; bottom: 51px; font-size: 11px; letter-spacing: 2px; color: rgba(199,224,255,0.52); b { color: $amber; } }
 
 	.end {
 		position: absolute;
-		width: 100%;
-		height: 100%;
+		inset: 0;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		text-align: center;
-		background: rgba(3, 8, 12, 0.6);
-
-		h1 {
-			font-size: 52px;
-			font-weight: 700;
-			letter-spacing: 4px;
-			margin-bottom: 12px;
-		}
-		p { font-size: 18px; color: rgba(188,217,255,0.8); margin-top: 4px; }
-		.score { color: $amber; font-size: 26px; margin-top: 18px; }
-		.again { margin-top: 28px; color: rgba(188,217,255,0.5); letter-spacing: 3px; }
-
-		&.win h1  { color: $teal;  text-shadow: 0 0 40px $teal-dim; }
-		&.lose h1 { color: $danger; text-shadow: 0 0 40px rgba(255,84,112,0.4); }
+		background: rgba(2,7,11,0.78);
+		.kicker { font-size: 11px; letter-spacing: 7px; color: $amber; }
+		h1 { margin-top: 10px; font-size: 56px; font-weight: 800; letter-spacing: 3px; }
+		p { margin-top: 11px; max-width: 650px; font-size: 17px; color: rgba(199,224,255,0.76); }
+		.seal { width: 85px; height: 85px; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid $teal; color: $teal; font-size: 40px; box-shadow: 0 0 35px $teal-dim; margin-bottom: 22px; }
+		.aperture-mark { width: 90px; height: 90px; border-radius: 50%; border: 8px solid $danger; border-left-color: transparent; transform: rotate(25deg); box-shadow: 0 0 35px rgba(255,82,109,0.45); margin-bottom: 25px; }
+		.result-grid { margin-top: 28px; gap: 17px; > div { min-width: 130px; padding: 13px 18px; flex-direction: column; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; } small { font-size: 9px; letter-spacing: 3px; color: rgba(199,224,255,0.46); } strong { margin-top: 5px; font-size: 28px; color: $amber; } }
+		.result-grid.compact > div { min-width: 160px; }
+		.story { color: $teal; font-style: italic; }
+		.again { margin-top: 28px; font-size: 11px; letter-spacing: 4px; color: rgba(199,224,255,0.48); }
+		&.win h1 { color: $teal; text-shadow: 0 0 42px $teal-dim; }
+		&.lose h1 { color: $danger; text-shadow: 0 0 42px rgba(255,82,109,0.42); }
 	}
 }

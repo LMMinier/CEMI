@@ -18,14 +18,10 @@ public sealed class CemiHeroAbilities : Component
 
 	protected override void OnUpdate()
 	{
-		if ( IsProxy || Player is null )
-			return;
+		if ( IsProxy || Player is null ) return;
 
-		if ( Input.Pressed( "attack1" ) )
-			RequestResonanceStrike();
-
-		if ( Input.Pressed( "power" ) )
-			RequestToggleHeraldMode();
+		if ( Input.Pressed( "attack1" ) ) RequestResonanceStrike();
+		if ( Input.Pressed( "power" ) ) RequestToggleHeraldMode();
 
 		if ( _timeSinceRecharge > 0.25f )
 		{
@@ -35,16 +31,12 @@ public sealed class CemiHeroAbilities : Component
 	}
 
 	[Rpc.Host( NetFlags.OwnerOnly )]
-	private void RequestResonanceStrike()
+	public void RequestResonanceStrike()
 	{
-		if ( Player is null || AimCamera is null || _timeSinceStrike < StrikeCooldown )
-			return;
-
-		if ( !Player.SpendResonance( StrikeCost ) )
-			return;
+		if ( Player is null || AimCamera is null || _timeSinceStrike < StrikeCooldown ) return;
+		if ( !Player.SpendResonance( StrikeCost ) ) return;
 
 		_timeSinceStrike = 0;
-
 		var start = AimCamera.WorldPosition;
 		var end = start + AimCamera.WorldRotation.Forward * StrikeRange;
 		var trace = Scene.Trace
@@ -62,22 +54,20 @@ public sealed class CemiHeroAbilities : Component
 	}
 
 	[Rpc.Host( NetFlags.OwnerOnly | NetFlags.Unreliable )]
-	private void RequestRecharge( float amount )
+	public void RequestRecharge( float amount )
 	{
-		if ( Player is null )
-			return;
-
+		if ( Player is null ) return;
 		Player.RestoreResonance( float.Clamp( amount, 0.0f, 3.0f ) );
 	}
 
 	[Rpc.Host( NetFlags.OwnerOnly )]
-	private void RequestToggleHeraldMode()
+	public void RequestToggleHeraldMode()
 	{
 		Player?.ToggleHeraldMode();
 	}
 
 	[Rpc.Broadcast( NetFlags.HostOnly | NetFlags.Unreliable )]
-	private void PlayStrikeEffects( Vector3 start, Vector3 end )
+	public void PlayStrikeEffects( Vector3 start, Vector3 end )
 	{
 		// Hook a beam, particles, camera impulse and the three-quick/one-low/two-wide audio cue here.
 		DebugOverlay.Line( start, end, Color.Cyan, 0.2f );

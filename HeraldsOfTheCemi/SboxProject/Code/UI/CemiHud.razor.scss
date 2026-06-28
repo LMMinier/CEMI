@@ -1,0 +1,171 @@
+CemiHud {
+	position: absolute;
+	inset: 0;
+	font-family: Poppins;
+	color: white;
+	pointer-events: none;
+
+	root {
+		position: absolute;
+		inset: 0;
+		padding: 34px 42px;
+	}
+
+	.topbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		width: 100%;
+		text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+	}
+
+	.identity,
+	.cred,
+	.mission,
+	.status-panel,
+	.activity-stats,
+	.district {
+		background-color: rgba(8, 12, 18, 0.78);
+		border: 1px solid rgba(88, 225, 233, 0.35);
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+		backdrop-filter: blur(8px);
+	}
+
+	.identity {
+		padding: 14px 18px;
+		min-width: 270px;
+	}
+
+	.eyebrow {
+		font-size: 11px;
+		letter-spacing: 2px;
+		opacity: 0.7;
+	}
+
+	.hero-name {
+		font-size: 27px;
+		font-weight: 800;
+	}
+
+	.crew {
+		font-size: 13px;
+		color: #58e1e9;
+	}
+
+	.district {
+		padding: 11px 18px;
+		font-size: 17px;
+		font-weight: 700;
+		letter-spacing: 1px;
+	}
+
+	.cred {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		padding: 12px 18px;
+	}
+
+	.cred span {
+		font-size: 10px;
+		letter-spacing: 2px;
+		opacity: 0.7;
+	}
+
+	.cred strong {
+		font-size: 28px;
+		color: #ffd166;
+	}
+
+	.status-panel {
+		position: absolute;
+		left: 42px;
+		bottom: 74px;
+		width: 330px;
+		padding: 16px;
+	}
+
+	.meter {
+		margin-bottom: 12px;
+	}
+
+	.meter:last-child {
+		margin-bottom: 0;
+	}
+
+	.label {
+		display: flex;
+		justify-content: space-between;
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 1px;
+		margin-bottom: 5px;
+	}
+
+	.track {
+		height: 9px;
+		background-color: rgba(255, 255, 255, 0.12);
+		overflow: hidden;
+	}
+
+	.fill {
+		height: 100%;
+		transition: width 0.15s ease;
+	}
+
+	.health .fill {
+		background-color: #ef476f;
+	}
+
+	.resonance .fill {
+		background-color: #58e1e9;
+		box-shadow: 0 0 18px rgba(88, 225, 233, 0.7);
+	}
+
+	.mission {
+		position: absolute;
+		right: 42px;
+		top: 125px;
+		width: 310px;
+		padding: 16px 18px;
+	}
+
+	.mission.complete {
+		border-color: rgba(255, 209, 102, 0.8);
+	}
+
+	.mission-title {
+		font-size: 20px;
+		font-weight: 800;
+		margin-top: 4px;
+	}
+
+	.mission-progress {
+		font-size: 12px;
+		margin-top: 7px;
+		color: #ffd166;
+	}
+
+	.activity-stats {
+		position: absolute;
+		left: 50%;
+		bottom: 28px;
+		transform: translateX(-50%);
+		display: flex;
+		gap: 20px;
+		padding: 10px 18px;
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 1px;
+	}
+
+	.herald-mode .identity,
+	.herald-mode .status-panel,
+	.herald-mode .mission,
+	.herald-mode .activity-stats,
+	.herald-mode .district,
+	.herald-mode .cred {
+		border-color: rgba(88, 225, 233, 0.9);
+		box-shadow: 0 0 28px rgba(88, 225, 233, 0.18);
+	}
+}

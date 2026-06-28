@@ -24,98 +24,60 @@ public sealed class CemiPlayerState : Component
 
 	public void TryUse( CemiInteractable target )
 	{
-		if ( IsProxy || target is null )
-			return;
-
+		if ( IsProxy || target is null ) return;
 		RequestUse( target );
 	}
 
 	public void RequestCrew( string crewName )
 	{
-		if ( IsProxy )
-			return;
-
+		if ( IsProxy ) return;
 		RequestCrewHost( crewName );
 	}
 
 	public void RequestHeroName( string heroName )
 	{
-		if ( IsProxy )
-			return;
-
+		if ( IsProxy ) return;
 		RequestHeroNameHost( heroName );
 	}
 
 	[Rpc.Host( NetFlags.OwnerOnly )]
-	private void RequestUse( CemiInteractable target )
+	public void RequestUse( CemiInteractable target )
 	{
-		if ( target is null || !target.Enabled )
-			return;
-
-		if ( WorldPosition.Distance( target.WorldPosition ) > CemiGameRules.InteractionRange )
-			return;
-
+		if ( target is null || !target.Enabled ) return;
+		if ( (WorldPosition - target.WorldPosition).Length > CemiGameRules.InteractionRange ) return;
 		target.Execute( this );
 	}
 
 	[Rpc.Host( NetFlags.OwnerOnly )]
-	private void RequestCrewHost( string requestedName )
+	public void RequestCrewHost( string requestedName )
 	{
 		var cleaned = CemiGameRules.CleanPlayerText( requestedName, 20 );
-		if ( cleaned.Length < 2 )
-			return;
-
+		if ( cleaned.Length < 2 ) return;
 		SetCrew( cleaned );
 	}
 
 	[Rpc.Host( NetFlags.OwnerOnly )]
-	private void RequestHeroNameHost( string requestedName )
+	public void RequestHeroNameHost( string requestedName )
 	{
 		var cleaned = CemiGameRules.CleanPlayerText( requestedName, 20 );
-		if ( cleaned.Length < 2 )
-			return;
-
+		if ( cleaned.Length < 2 ) return;
 		HeroName = cleaned;
 	}
 
-	internal void SetCrew( string crewName )
-	{
-		CrewName = CemiGameRules.CleanPlayerText( crewName, 20 );
-	}
-
-	internal void AwardCred( int amount )
-	{
-		StreetCred = int.Max( 0, StreetCred + amount );
-	}
+	internal void SetCrew( string crewName ) => CrewName = CemiGameRules.CleanPlayerText( crewName, 20 );
+	internal void AwardCred( int amount ) => StreetCred = int.Max( 0, StreetCred + amount );
 
 	internal bool SpendResonance( float amount )
 	{
-		if ( amount <= 0.0f || Resonance < amount )
-			return false;
-
+		if ( amount <= 0.0f || Resonance < amount ) return false;
 		Resonance = float.Clamp( Resonance - amount, 0.0f, CemiGameRules.MaxResonance );
 		return true;
 	}
 
-	internal void RestoreResonance( float amount )
-	{
-		Resonance = float.Clamp( Resonance + amount, 0.0f, CemiGameRules.MaxResonance );
-	}
-
-	internal void ApplyDamage( int amount )
-	{
-		Health = int.Clamp( Health - int.Max( 0, amount ), 0, CemiGameRules.MaxHealth );
-	}
-
-	internal void Heal( int amount )
-	{
-		Health = int.Clamp( Health + int.Max( 0, amount ), 0, CemiGameRules.MaxHealth );
-	}
-
-	internal void ToggleHeraldMode()
-	{
-		HeraldMode = !HeraldMode;
-	}
+	internal void RestoreResonance( float amount ) => Resonance = float.Clamp( Resonance + amount, 0.0f, CemiGameRules.MaxResonance );
+	internal void ApplyDamage( int amount ) => Health = int.Clamp( Health - int.Max( 0, amount ), 0, CemiGameRules.MaxHealth );
+	internal void Heal( int amount ) => Health = int.Clamp( Health + int.Max( 0, amount ), 0, CemiGameRules.MaxHealth );
+	internal void ToggleHeraldMode() => HeraldMode = !HeraldMode;
 
 	internal void StartMission( string id, string title, MissionObjective objective, int target, int reward )
 	{
@@ -130,22 +92,18 @@ public sealed class CemiPlayerState : Component
 
 	internal void RecordMissionProgress( MissionObjective objective, int amount = 1 )
 	{
-		if ( MissionComplete || MissionObjective != objective || string.IsNullOrEmpty( ActiveMissionId ) )
-			return;
-
+		if ( MissionComplete || MissionObjective != objective || string.IsNullOrEmpty( ActiveMissionId ) ) return;
 		MissionProgress = int.Clamp( MissionProgress + int.Max( 0, amount ), 0, MissionTarget );
 		MissionComplete = MissionProgress >= MissionTarget;
 	}
 
 	internal bool ClaimMissionReward( string missionId )
 	{
-		if ( !MissionComplete || ActiveMissionId != missionId )
-			return false;
-
+		if ( !MissionComplete || ActiveMissionId != missionId ) return false;
 		AwardCred( MissionReward );
 		ActiveMissionId = string.Empty;
 		MissionTitle = string.Empty;
-		MissionObjective = MissionObjective.None;
+		MissionObjective = HeraldsOfTheCemi.MissionObjective.None;
 		MissionProgress = 0;
 		MissionTarget = 0;
 		MissionReward = 0;
@@ -156,22 +114,20 @@ public sealed class CemiPlayerState : Component
 	internal void AddGraffitiTag()
 	{
 		GraffitiTags++;
-		RecordMissionProgress( MissionObjective.Graffiti );
+		RecordMissionProgress( HeraldsOfTheCemi.MissionObjective.Graffiti );
 	}
 
 	internal void AddStreetballWin()
 	{
 		StreetballWins++;
-		RecordMissionProgress( MissionObjective.Streetball );
+		RecordMissionProgress( HeraldsOfTheCemi.MissionObjective.Streetball );
 	}
 
 	internal void SetDistrict( string districtName )
 	{
 		var cleaned = CemiGameRules.CleanPlayerText( districtName, 32 );
-		if ( string.IsNullOrEmpty( cleaned ) || CurrentDistrict == cleaned )
-			return;
-
+		if ( string.IsNullOrEmpty( cleaned ) || CurrentDistrict == cleaned ) return;
 		CurrentDistrict = cleaned;
-		RecordMissionProgress( MissionObjective.DiscoverDistrict );
+		RecordMissionProgress( HeraldsOfTheCemi.MissionObjective.DiscoverDistrict );
 	}
 }

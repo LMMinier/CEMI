@@ -4,93 +4,140 @@
 @using System.Linq;
 @inherits PanelComponent
 
-<root>
+<root class="state-@(Director?.State.ToString().ToLower() ?? "loading")">
+	<div class="sky">
+		<div class="moon"></div>
+		<div class="hunter hunter-a" style="opacity:@HunterOpacity;"></div>
+		<div class="hunter hunter-b" style="opacity:@HunterOpacity;"></div>
+	</div>
+
+	<div class="river">
+		<div class="current current-a"></div>
+		<div class="current current-b"></div>
+		<div class="roots roots-left"></div>
+		<div class="roots roots-right"></div>
+		<div class="corridor" style="opacity:@CorridorOpacity;"></div>
+		<div class="canoe" style="left:@CanoeLeft%; transform: rotate(@CanoeTilt.ToString("0.0")deg);">
+			<div class="canoe-body"></div>
+			<div class="amaia"></div>
+			<div class="child"></div>
+			<div class="wake"></div>
+		</div>
+	</div>
+
 	<div class="vignette"></div>
 
 	@if ( Director?.State == PrologueState.Playing )
 	{
-		<div class="top">
+		<div class="chapter">
+			<div class="eyebrow">HERALDS OF THE CEMÍ</div>
 			<div class="title">Before the Corridors</div>
-			<div class="sub">Answer the river on the beat. Stay under the roots.</div>
+			<div class="sub">The river carries instructions. Answer before Aperture finds the wake.</div>
 		</div>
 
 		<div class="heat">
-			<label>APERTURE</label>
-			<div class="bar"><div class="fill" style="width:@(HeatPct)%;"></div></div>
+			<div class="heat-line"><label>APERTURE TRACE</label><span>@HeatPct%</span></div>
+			<div class="bar"><div class="fill" style="width:@HeatPct%;"></div></div>
+		</div>
+
+		<div class="pattern-card">
+			<div class="pattern-title">THE RIVER PHRASE</div>
+			<div class="pattern-row">
+				@for ( int i = 0; i < Pattern.Length; i++ )
+				{
+					<div class="pattern-step @(i == PatternStep ? "active" : "") @(i < PatternStep ? "done" : "")">
+						<span class="dot"></span><span>@Pattern[i]</span>
+					</div>
+				}
+			</div>
+			<div class="pattern-call">@CurrentCall</div>
 		</div>
 
 		<div class="beat">
-			<div class="ring @OnBeatClass" style="transform: scale(@RingScale.ToString("0.00"));"></div>
+			<div class="ring outer @OnBeatClass" style="transform: scale(@RingScale.ToString("0.00"));"></div>
+			<div class="ring inner"></div>
 			<div class="core @OnBeatClass"></div>
 		</div>
 
 		<div class="judge @JudgeClass">@JudgeText</div>
 
-		<div class="progress">
-			<span>Node @(Player?.NodeIndex ?? 0) / @NodeTotal</span>
-			<span class="combo">@(Player?.Combo ?? 0)×</span>
+		<div class="stats">
+			<div><small>PASSAGE</small><strong>@ProgressPct%</strong></div>
+			<div><small>COMBO</small><strong>@(Player?.Combo ?? 0)×</strong></div>
+			<div><small>SCORE</small><strong>@(Player?.Score ?? 0)</strong></div>
 		</div>
 
-		<div class="hint">[Space] / [Mouse1] — answer the river</div>
+		<div class="progress-track"><div class="progress-fill" style="width:@ProgressPct%;"></div></div>
+		<div class="hint"><b>SPACE</b> or <b>MOUSE 1</b> — answer when the rings meet</div>
 	}
 	else if ( Director?.State == PrologueState.Escaped )
 	{
 		<div class="end win">
+			<div class="seal">ᚠ</div>
+			<div class="kicker">THE RIVER REMEMBERED</div>
 			<h1>Into the Corridor</h1>
-			<p>The river remembered the path. You carried them through.</p>
-			<p class="score">Score @(Player?.Score ?? 0)</p>
-			<p class="again">[R] run it again</p>
+			<p>Amaia carried her son beneath the roots. The hunters lost the shape of them.</p>
+			<div class="result-grid">
+				<div><small>RANK</small><strong>@(Player?.Rank ?? "-")</strong></div>
+				<div><small>SCORE</small><strong>@(Player?.Score ?? 0)</strong></div>
+				<div><small>BEST COMBO</small><strong>@(Player?.BestCombo ?? 0)×</strong></div>
+				<div><small>ACCURACY</small><strong>@AccuracyPct%</strong></div>
+			</div>
+			<p class="story">Far ahead, another city waits above another buried corridor.</p>
+			<p class="again">PRESS R TO CROSS AGAIN</p>
 		</div>
 	}
 	else if ( Director?.State == PrologueState.Caught )
 	{
 		<div class="end lose">
+			<div class="aperture-mark"></div>
+			<div class="kicker">THE PATTERN BROKE</div>
 			<h1>The Aperture Opens</h1>
-			<p>Cold light found the water. They were counting you.</p>
-			<p class="again">[R] run it again</p>
+			<p>Cold light found the water. The hunters learned the shape of the wake.</p>
+			<div class="result-grid compact">
+				<div><small>PASSAGE</small><strong>@ProgressPct%</strong></div>
+				<div><small>SCORE</small><strong>@(Player?.Score ?? 0)</strong></div>
+			</div>
+			<p class="again">PRESS R TO TRY AGAIN</p>
 		</div>
 	}
 </root>
 
 @code {
+	readonly string[] Pattern = { "QUICK", "QUICK", "QUICK", "LOW", "WIDE", "WIDE" };
 	ResonanceConductor Conductor => Scene.GetAllComponents<ResonanceConductor>().FirstOrDefault();
 	RhythmPlayer Player => Scene.GetAllComponents<RhythmPlayer>().FirstOrDefault();
 	HeatSystem Heat => Scene.GetAllComponents<HeatSystem>().FirstOrDefault();
 	PrologueDirector Director => Scene.GetAllComponents<PrologueDirector>().FirstOrDefault();
 
 	int HeatPct => (int)((Heat?.Heat ?? 0f) * 100f);
-	int NodeTotal => Player?.NodeTotal ?? 1;
-
-	// The ring contracts toward the core as the next beat approaches; smallest on-beat.
-	float RingScale => Conductor is null ? 1f : 1f + (1f - Conductor.BeatPhase) * 1.3f;
-	string OnBeatClass => (Conductor is not null && Conductor.BeatPhase < 0.12f) ? "pulse" : "";
-
-	bool JudgeFresh => Player is not null && (Time.Now - Player.LastJudgementTime) < 0.45f;
-
+	int ProgressPct => (int)((Player?.Progress ?? 0f) * 100f);
+	int AccuracyPct => (int)((Player?.Accuracy ?? 0f) * 100f);
+	int PatternStep => Player?.PatternStep ?? 0;
+	string CurrentCall => Player?.CurrentPatternName ?? "LISTEN";
+	float CanoeLeft => 10f + (Player?.Progress ?? 0f) * 72f;
+	float CanoeTilt => JudgeFresh && Player?.LastJudgement == RhythmJudgement.Miss ? -5f : 0f;
+	float HunterOpacity => 0.12f + (Heat?.Heat ?? 0f) * 0.78f;
+	float CorridorOpacity => 0.15f + (Player?.Progress ?? 0f) * 0.85f;
+	float RingScale => Conductor is null ? 1f : 1f + (1f - Conductor.BeatPhase) * 1.45f;
+	string OnBeatClass => (Conductor is not null && (Conductor.BeatPhase < 0.10f || Conductor.BeatPhase > 0.90f)) ? "pulse" : "";
+	bool JudgeFresh => Player is not null && (Time.Now - Player.LastJudgementTime) < 0.48f;
 	string JudgeText => !JudgeFresh ? "" : Player.LastJudgement switch
 	{
 		RhythmJudgement.Perfect => "PERFECT",
-		RhythmJudgement.Good => "good",
-		RhythmJudgement.Miss => "splash!",
+		RhythmJudgement.Good => "GOOD",
+		RhythmJudgement.Miss => "THE WATER HEARD YOU",
 		_ => ""
 	};
-
-	string JudgeClass
+	string JudgeClass => !JudgeFresh ? "hidden" : Player.LastJudgement switch
 	{
-		get
-		{
-			if ( !JudgeFresh ) return "hidden";
-			return Player.LastJudgement switch
-			{
-				RhythmJudgement.Perfect => "perfect show",
-				RhythmJudgement.Good => "good show",
-				_ => "miss show"
-			};
-		}
-	}
+		RhythmJudgement.Perfect => "perfect show",
+		RhythmJudgement.Good => "good show",
+		_ => "miss show"
+	};
 
-	// Rhythm UI animates continuously, so include the live values in the hash.
 	protected override int BuildHash() => HashCode.Combine(
-		Director?.State, HeatPct, Player?.NodeIndex, Player?.Combo, Player?.Score,
-		(int)(RingScale * 24f), OnBeatClass, JudgeText, JudgeClass );
+		Director?.State, HeatPct, ProgressPct, Player?.Combo, Player?.Score,
+		Player?.BestCombo, AccuracyPct, PatternStep, (int)(RingScale * 24f),
+		OnBeatClass, JudgeText, JudgeClass );
 }

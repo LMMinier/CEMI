@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "Heralds of the CEMI",
+    "slug": "heralds-cemi-prototype",
+    "version": "0.1.0",
+    "orientation": "landscape",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#060b1c"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
